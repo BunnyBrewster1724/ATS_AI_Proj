@@ -57,6 +57,7 @@ if uploaded_file is not None:
 submit1 = st.button("Tell me About the resume")
 submit2 = st.button("How can I improve my skills? ")
 submit3 = st.button("Percentage match")
+submit4 = st.button("Score Check")  # New button for ATS score check
 
 input_prompt1 = """
  You are an experienced Technical Human Resource Manager,your task is to review the provided resume against the job description. 
@@ -76,20 +77,51 @@ your task is to evaluate the resume against the provided job description. Give m
 the job description. First the output should come as percentage and then keywords missing and last final thoughts.
 """
 
+input_prompt4 = """
+You are an advanced ATS (Applicant Tracking System) analyzer specializing in resume evaluation. 
+Assess this resume against the job description and provide:
+1. An overall ATS score out of 100
+2. A breakdown of the score by these categories:
+   - Keyword match (0-25): How well the resume contains job-specific keywords
+   - Skills relevance (0-25): Alignment of candidate's skills with required skills
+   - Experience match (0-25): How well the experience matches job requirements
+   - Education & certifications (0-25): Relevance of qualifications to the position
+3. List of suggested improvements to increase the ATS score
+4. Format your response clearly with section headers and make it visually scannable
+"""
+
 if submit1:
     if uploaded_file is not None:
         pdf_content=input_pdf_setup(uploaded_file)
         response=get_gemini_response(input_prompt1,pdf_content,input_text)
-        st.subheader("The Repsonse is")
+        st.subheader("The Response is")
         st.write(response)
     else:
-        st.write("Please uplaod the resume")
+        st.write("Please upload the resume")
+
+elif submit2:
+    if uploaded_file is not None:
+        pdf_content=input_pdf_setup(uploaded_file)
+        response=get_gemini_response(input_prompt2,pdf_content,input_text)
+        st.subheader("The Response is")
+        st.write(response)
+    else:
+        st.write("Please upload the resume")
 
 elif submit3:
     if uploaded_file is not None:
         pdf_content=input_pdf_setup(uploaded_file)
         response=get_gemini_response(input_prompt3,pdf_content,input_text)
-        st.subheader("The Repsonse is")
+        st.subheader("The Response is")
         st.write(response)
     else:
-        st.write("Please uplaod the resume")
+        st.write("Please upload the resume")
+
+elif submit4:  # New condition for ATS score check button
+    if uploaded_file is not None:
+        pdf_content=input_pdf_setup(uploaded_file)
+        response=get_gemini_response(input_prompt4,pdf_content,input_text)
+        st.subheader("ATS Score Analysis")
+        st.write(response)
+    else:
+        st.write("Please upload the resume")
