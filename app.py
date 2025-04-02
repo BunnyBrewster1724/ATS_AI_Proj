@@ -1,13 +1,13 @@
 import base64
 import io
 from dotenv import load_dotenv
+import fitz  # PyMuPDF
 
 load_dotenv()
 
 import streamlit as st
 import os 
 from PIL import Image
-import pdf2image
 import google.generativeai as genai
 
 # This must be the first Streamlit command
@@ -26,23 +26,29 @@ def get_gemini_response(input, pdf_content, prompt):
 
 def input_pdf_setup(uploaded_file):
     if uploaded_file is not None:
-        ##convert the pdf to image
-        images = pdf2image.convert_from_bytes(uploaded_file.read())
+        # Read the PDF file
+        pdf_bytes = uploaded_file.read()
         
-        first_page = images[0]
+        # Open the PDF using PyMuPDF
+        pdf_document = fitz.open(stream=pdf_bytes, filetype="pdf")
         
-        #convert to bytes
-        image_byte_arr = io.BytesIO()
-        first_page.save(image_byte_arr, format='JPEG')
-        image_byte_arr = image_byte_arr.getvalue()
+        # Get the first page
+        first_page = pdf_document.load_page(0)
         
-        pdf_parts =[
+        # Render the page to an image
+        pix = first_page.get_pixmap()
+        
+        # Convert to bytes
+        image_byte_arr = pix.tobytes("jpeg")
+        
+        pdf_parts = [
             {
                 "mime_type": "image/jpeg",
-                "data": base64.b64encode(image_byte_arr).decode()  #encode to base64
+                "data": base64.b64encode(image_byte_arr).decode()
             }
         ]
         
+        pdf_document.close()
         return pdf_parts
     else:
         raise FileNotFoundError("File not found")
@@ -111,21 +117,33 @@ with col1:
     # st.markdown('<div class="highlight">', unsafe_allow_html=True)
     st.markdown("### Job Description")
     st.markdown("Paste the job description you're applying for:", unsafe_allow_html=True)
-    input_text = st.text_area("", height=200, key="input")
+    input_text = st.text_area("Job Description", height=200, key="input", label_visibility="collapsed")
     st.markdown('</div>', unsafe_allow_html=True)
 
 with col2:
     # st.markdown('<div class="upload-section">', unsafe_allow_html=True)
     st.markdown("### Upload Resume")
-    uploaded_file = st.file_uploader("", type=["pdf"])
+    uploaded_file = st.file_uploader("Upload Resume PDF", type=["pdf"], label_visibility="collapsed")
     
     if uploaded_file is not None:
         st.success("✅ Resume uploaded successfully!")
         try:
-            # Display the first page as preview
-            images = pdf2image.convert_from_bytes(uploaded_file.read())
-            uploaded_file.seek(0)  # Reset file pointer after reading
-            st.image(images[0], width=250, caption="Resume Preview")
+            # Use PyMuPDF for preview
+            pdf_bytes = uploaded_file.read()
+            pdf_document = fitz.open(stream=pdf_bytes, filetype="pdf")
+            first_page = pdf_document.load_page(0)
+            pix = first_page.get_pixmap()
+            img_data = pix.tobytes("png")
+            
+            # Convert to PIL Image for display
+            img = Image.open(io.BytesIO(img_data))
+            
+            # Display the image
+            st.image(img, width=250, caption="Resume Preview")
+            
+            # Reset file pointer and close document
+            uploaded_file.seek(0)
+            pdf_document.close()
         except Exception as e:
             st.error(f"Error previewing PDF: {e}")
     # st.markdown('</div>', unsafe_allow_html=True)
@@ -207,14 +225,15 @@ if any([submit1, submit2, submit3, submit4]):
                 st.markdown('</div>', unsafe_allow_html=True)
                 
                 # Save option
-                if st.button("📥 Save Results"):
+                if st.button("📥 Save Results", key="save_results"):
                     with st.spinner("Preparing download..."):
                         download_text = f"# {analysis_type} Results\n\n{response}"
                         st.download_button(
                             label="Download Results as Text",
                             data=download_text,
                             file_name=f"resume_{analysis_type.lower().replace(' ', '_')}.txt",
-                            mime="text/plain"
+                            mime="text/plain",
+                            key="download_button"
                         )
             except Exception as e:
                 st.error(f"An error occurred: {e}")
