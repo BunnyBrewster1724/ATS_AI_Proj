@@ -14,7 +14,9 @@ load_dotenv()
 
 # Configure page
 st.set_page_config(
-    page_title="ATS Resume Analyzer & Job Search", 
+    page_title="RsuMatch",
+    initial_sidebar_state="expanded",
+    # page_title="ATS Resume Analyzer & Job Search", 
     page_icon="📝", 
     layout="wide"
 )
