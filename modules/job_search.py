@@ -259,11 +259,11 @@ def render_salary_tab():
     
     with col1:
         st.markdown("### Job Title")
-        salary_job_title = st.text_input("Job Title", value="Data Scientist", key="salary_job_title", label_visibility="collapsed")
+        salary_job_title = st.text_input("Job Title", value="Enter desired job title", key="salary_job_title", label_visibility="collapsed")
     
     with col2:
         st.markdown("### Location")
-        salary_location = st.text_input("Location", value="India", key="salary_location", label_visibility="collapsed")
+        salary_location = st.text_input("Location", value="Enter country", key="salary_location", label_visibility="collapsed")
     
     # Experience dropdown
     experience_options = ["All Experience Levels", "Less than 1 year", "1-3 years", "4-6 years", "7-9 years", "10-14 years", "15+ years"]
