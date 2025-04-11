@@ -1,0 +1,43 @@
+# Environment variables
+*.env
+.env
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv/
+.virtualenv/
+
+# Python bytecode
+pycache/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# VSCode
+.vscode/
+*.code-workspace
+
+# PyCharm
+.idea/
+
+# Logs
+logs/
+*.log
+
+# Local data files
+data/
+!data/.gitkeep
+
+# Add these lines to .gitignore
+.csv
+data/.csv
