@@ -17,7 +17,9 @@ def find_job_matches(user_skills, top_n=5):
         DataFrame with top matching jobs
     """
     try: 
-        df = pd.read_csv("/Users/chinku/git/ATS_AI_Proj/cleaned_job_skills.csv")
+        #df = pd.read_csv("/Users/chinku/git/ATS_AI_Proj/cleaned_job_skills.csv")
+        df = pd.read_csv("data/cleaned_job_skills.csv")
+
         df_cleaned = df.dropna(subset=['job_skills'])
         vectorizer = TfidfVectorizer()
         job_skill_vectors = vectorizer.fit_transform(df_cleaned['job_skills'])
