@@ -15,7 +15,7 @@ def get_gemini_response(input_prompt, pdf_content, job_description):
     Returns:
         Text response from Gemini
     """
-    model = genai.GenerativeModel('gemini-1.5-flash')
+    model = genai.GenerativeModel('gemini-pro')
     response = model.generate_content(contents=[input_prompt, pdf_content[0], job_description])
     return response.text
 
